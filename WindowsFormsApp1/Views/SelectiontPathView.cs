@@ -27,17 +27,15 @@ namespace SelectiontPathView
 
         private void VerifyIntegrity()
         {
-            if (String.IsNullOrEmpty(textBoxPath.Text))
+            if(String.IsNullOrEmpty(textBoxPath.Text))
                 throw new Exception("Elija una carpeta primero");
         }
 
         //Events
         private void buttonSelect_Click(object sender, EventArgs e)
         {
-            if (folderBrowserDialogFolders.ShowDialog() == DialogResult.OK)
-            {
+            if(folderBrowserDialogFolders.ShowDialog() == DialogResult.OK)
                 textBoxPath.Text = folderBrowserDialogFolders.SelectedPath;
-            }
         }
 
         private void buttonExit_Click(object sender, EventArgs e) => this.Close();

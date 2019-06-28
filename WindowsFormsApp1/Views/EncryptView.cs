@@ -16,26 +16,40 @@ namespace EncryptView
     public partial class EncryptView : Form
     {
         private SelectiontPathView.SelectiontPathView spv;
-        private string path;
         
-        public EncryptView(String _path,SelectiontPathView.SelectiontPathView _spv)
+        public EncryptView(string _path,SelectiontPathView.SelectiontPathView _spv)
         {
             InitializeComponent();
-            path = _path;
-            spv = _spv;
+            this.InitialContext(_path,_spv);
         }
 
         //Helpful Methods
-        private void SetTextBoxEncrypt(string path) => textBoxEncrypt.Text = path;
+        private void InitialContext(string _path,SelectiontPathView.SelectiontPathView _spv)
+        {
+            spv = _spv;
+            this.DisabledAndSetTextBox(textBoxPathToSave,_path);
+            this.FormClosing += (sender,e) => Application.Exit();
+            //this.FormClosing += CloseApp;
+        }
 
-        private void SetTextBoxDecrypt(string path) => textBoxDecrypt.Text = path;
+        private void SetTextboxText(TextBox textBox, string text) => textBox.Text = text;
+        
+        private void DisableTextbox(TextBox textBox) => textBox.Enabled = false;
+
+        private void DisabledAndSetTextBox(TextBox textBox,string text)
+        {
+            this.DisableTextbox(textBox);
+            this.SetTextboxText(textBox,text);
+        }
 
         private StreamReader OpenStreamReader(OpenFileDialog openFile) => new StreamReader(@openFile.FileName);
 
-        private void CloseStreamReader(StreamReader stream) => stream.Close();
+        private void CloseStreamReader(StreamReader reader) => reader.Close();
 
-        
+
         //Events
+        //private void CloseApp(object sender, EventArgs e) => Application.Exit();
+
         private void SelectButton_Click(object sender, EventArgs e)
         {
             if (openFileDialogFiles.ShowDialog() == DialogResult.OK)
@@ -43,7 +57,8 @@ namespace EncryptView
                 try
                 {
                     StreamReader sr = OpenStreamReader(openFileDialogFiles);
-                    this.SetTextBoxEncrypt(@openFileDialogFiles.FileName);
+                    this.DisabledAndSetTextBox(textBoxFile,@openFileDialogFiles.FileName);
+                    this.SetTextboxText(textBoxEncrypt,@openFileDialogFiles.FileName);
                     this.CloseStreamReader(sr);
                 }
                 catch (SecurityException ex)
@@ -60,7 +75,6 @@ namespace EncryptView
             {
                 MessageBox.Show("Encryptado Exitoso.","Encriptado",MessageBoxButtons.OK,MessageBoxIcon.Information);
             }
-
             catch
             {
 
