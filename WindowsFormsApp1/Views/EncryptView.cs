@@ -16,20 +16,24 @@ namespace EncryptView
     public partial class EncryptView : Form
     {
         private SelectiontPathView.SelectiontPathView spv;
+        private string Key,initialVector;
         
-        public EncryptView(string _path,SelectiontPathView.SelectiontPathView _spv)
+        public EncryptView(string _path,SelectiontPathView.SelectiontPathView _spv,string _key,string _initialVector)
         {
             InitializeComponent();
-            this.InitialContext(_path,_spv);
+            this.InitialContext(_path,_spv,_key,_initialVector);
         }
 
         //Helpful Methods
-        private void InitialContext(string _path,SelectiontPathView.SelectiontPathView _spv)
+        private void InitialContext(string _path,SelectiontPathView.SelectiontPathView _spv, string _key, string _initialVector)
         {
             spv = _spv;
+            Key = _key;
+            initialVector = _initialVector;
             this.DisabledAndSetTextBox(textBoxPathToSave,_path);
-            this.FormClosing += (sender,e) => Application.Exit();
-            //this.FormClosing += CloseApp;
+            this.DisabledAndSetTextBox(textBoxKey, _key);
+            this.DisabledAndSetTextBox(textBoxInitialVector, _initialVector);
+            //this.FormClosing += (sender,e) => Application.Exit();
         }
 
         private void SetTextboxText(TextBox textBox, string text) => textBox.Text = text;
@@ -48,8 +52,6 @@ namespace EncryptView
 
 
         //Events
-        //private void CloseApp(object sender, EventArgs e) => Application.Exit();
-
         private void SelectButton_Click(object sender, EventArgs e)
         {
             if (openFileDialogFiles.ShowDialog() == DialogResult.OK)
@@ -68,7 +70,14 @@ namespace EncryptView
             }
         }
 
-
+        private void buttonBackToSelection_Click(object sender, EventArgs e)
+        {
+            this.Close();
+            spv.Show();
+        }
+        
+        private void buttonExit_Click(object sender, EventArgs e) => Application.Exit();
+        
         private void buttonEncrypt_Click(object sender, EventArgs e)
         {
             try
