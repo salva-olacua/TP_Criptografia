@@ -33,7 +33,6 @@ namespace EncryptView
             this.DisabledAndSetTextBox(textBoxPathToSave,_path);
             this.DisabledAndSetTextBox(textBoxKey, _key);
             this.DisabledAndSetTextBox(textBoxInitialVector, _initialVector);
-            //this.FormClosing += (sender,e) => Application.Exit();
         }
 
         private void SetTextboxText(TextBox textBox, string text) => textBox.Text = text;

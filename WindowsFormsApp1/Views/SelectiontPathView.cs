@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WindowsFormsApp1.Objects;
 
 namespace SelectiontPathView
 {
@@ -19,13 +21,24 @@ namespace SelectiontPathView
 
             //sacar esta wea!!!
             UTF8Encoding encoding = new UTF8Encoding();
-            string a = "asd";
+            string a = "1111111111";
             byte[] bytes = encoding.GetBytes(a);
-            Console.WriteLine("la cantidad de bytes es: "+bytes.Length);
-            Console.WriteLine("el primer byte es: " + encoding.GetString(bytes,0,1));
+            BitArray bitArray = new BitArray(encoding.GetBytes(a));
+            Console.WriteLine("la cantidad de bytes es: " + bytes.Length);
+            Console.WriteLine("el primer byte es: " + encoding.GetString(bytes, 0, 1));
             Console.WriteLine("el segundo byte es: " + bytes[1]);
             Console.WriteLine("el tercer byte es: " + encoding.GetString(bytes, 2, 1));
-            Console.WriteLine("el string es : "+ encoding.GetString(bytes));
+            Console.WriteLine("el string es : " + encoding.GetString(bytes));
+            Console.WriteLine("la cantidad del bit array es: " + bitArray.Length);
+            Console.WriteLine("el primer bit es: " + bitArray[1]);
+            Console.WriteLine("el xor es: " + (bitArray.Get(1)^false));
+            Console.WriteLine("el resultado es: " + ( false| false&true |false));
+
+            Trivium trivium = new Trivium("1111111111","2222222222");
+            trivium.BuildTriviumKey();
+            BitArray key = trivium.GetKeyStream();
+            Console.WriteLine("el primer bit del keystream es: " + key[0]);
+
         }
 
         //Helpful Methods
