@@ -74,6 +74,30 @@ namespace EncryptView
             }
         }
 
+        private void EncryptBMP()
+        {
+            byte[] data;
+            byte[] data2;
+            using (FileStream fs = new FileStream(@openFileDialogFiles.FileName, FileMode.Open, FileAccess.Read))
+            {
+                data2 = new byte[fs.Length];
+                fs.Read(data2,0, data2.Length);
+                data = new byte[data2.Length-54];
+                for (int i = 0; i < data.Length; i++) data[0+i] = data2[54+i];
+            }
+            
+            BitArray messageToEncrypt = new BitArray(data);
+            BitArray encrypted = encryptor.Encrypt(messageToEncrypt, trivium.GetKeyStream());
+
+            using (FileStream fileStream = new FileStream((@textBoxPathToSave.Text + @"\ArchivoEncriptado.BMP"), FileMode.Create, FileAccess.Write))
+            {
+                byte[] encryptedBytes = this.BitToByte(encrypted);
+                for (int i = 0; i < encryptedBytes.Length; i++) data2[54+i] = encryptedBytes[i];
+                fileStream.Write(data2,0,data2.Length);                
+            }
+
+        }
+
         private void DecryptToFile()
         {
             BitArray messageToDecrypt = new BitArray(File.ReadAllBytes(@textBoxDecrypt.Text));
@@ -86,13 +110,58 @@ namespace EncryptView
             }
         }
 
+        private void DecryptBMP()
+        {
+            byte[] data;
+            byte[] data2;
+            using (FileStream fs = new FileStream(@textBoxDecrypt.Text, FileMode.Open, FileAccess.Read))
+            {
+                data2 = new byte[fs.Length];
+                fs.Read(data2, 0, data2.Length);
+                data = new byte[data2.Length - 54];
+                for (int i = 0; i < data.Length; i++) data[0+i] = data2[54+i];
+            }
+
+            BitArray messageToEncrypt = new BitArray(data);
+            BitArray decrypted = encryptor.Decrypt(messageToEncrypt, trivium.GetKeyStream());
+
+            using (FileStream fileStream = new FileStream((@textBoxPathToSave.Text + @"\ArchivoDesencriptado.BMP"), FileMode.Create, FileAccess.Write))
+            {
+                byte[] decryptedBytes = this.BitToByte(decrypted);
+                for (int i = 0; i < decryptedBytes.Length; i++) data2[54 + i] = decryptedBytes[i];
+                fileStream.Write(data2, 0, data2.Length);
+            }
+        }
+
         private void VerifyPathOfFileToEncrypt()
         {
             if (String.IsNullOrEmpty(textBoxEncrypt.Text))
                 throw new Exception("Debe seleccionar un archivo primero.");
         }
 
+        private void EncrypAccordingToTheFile()
+        {
+            if (Path.GetExtension(@openFileDialogFiles.FileName) == ".BMP")
+            {
+                this.EncryptBMP();
+                this.SetTextboxText(textBoxDecrypt, (@textBoxPathToSave.Text + @"\ArchivoEncriptado.BMP"));
+            }
+            else
+            {
+                this.EncryptToFile();
+                this.SetTextboxText(textBoxDecrypt, (@textBoxPathToSave.Text + @"\ArchivoEncriptado"));
+            }
+        }
 
+        private void DecrypAccordingToTheFile()
+        {
+            if (Path.GetExtension(@textBoxDecrypt.Text) == ".BMP")
+                this.DecryptBMP();
+            else
+                this.DecryptToFile();
+        }
+
+        
         //Events
         private void SelectButton_Click(object sender, EventArgs e)
         {
@@ -123,8 +192,7 @@ namespace EncryptView
             try
             {
                 this.VerifyPathOfFileToEncrypt();
-                this.EncryptToFile();
-                this.SetTextboxText(textBoxDecrypt,(@textBoxPathToSave.Text + @"\ArchivoEncriptado"));
+                this.EncrypAccordingToTheFile();
                 MessageBox.Show("Encriptado Exitoso.","Encriptado",MessageBoxButtons.OK,MessageBoxIcon.Information);
             }
             catch(Exception ex)
@@ -132,12 +200,12 @@ namespace EncryptView
                 MessageBox.Show(ex.Message);
             }
         }
-
+        
         private void buttonDecrypt_Click(object sender, EventArgs e)
         {
             try
             {
-                this.DecryptToFile();
+                this.DecrypAccordingToTheFile();
                 MessageBox.Show("Desencriptado Exitoso.", "Encriptado", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
@@ -145,13 +213,6 @@ namespace EncryptView
                 MessageBox.Show(ex.Message);
             }
         }
-
         
-        
-
-
-        //obtengo la extension del archivo
-        //Console.WriteLine(Path.GetExtension(openFileDialogFiles.FileName));
-
     }
 }

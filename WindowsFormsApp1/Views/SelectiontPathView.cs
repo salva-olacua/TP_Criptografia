@@ -18,33 +18,7 @@ namespace SelectiontPathView
         public SelectiontPathView()
         {
             InitializeComponent();
-            textBoxPath.Enabled = false;
-
-            //sacar esta wea!!!
-            UTF8Encoding encoding = new UTF8Encoding();
-            string a = "1234567893";
-            byte[] bytes = encoding.GetBytes(a);
-            byte[] bytes2 = encoding.GetBytes("131311");
-
-            BitArray bitArray = new BitArray(encoding.GetBytes(a));
-            BitArray bitArray2 = new BitArray(bytes2); 
-
-            Console.WriteLine("la cantidad de bytes es: " + bytes.Length);
-            Console.WriteLine("el primer byte es: " + encoding.GetString(bytes, 0, 1));
-            Console.WriteLine("el segundo byte es: " + bytes[1]);
-            Console.WriteLine("el tercer byte es: " + encoding.GetString(bytes, 2, 1));
-            Console.WriteLine("el string es : " + encoding.GetString(bytes));
-            Console.WriteLine("la cantidad del bit array es: " + bitArray.Length);
-            Console.WriteLine("el primer bit es: " + bitArray[1]);
-            Console.WriteLine("el xor es: " + (bitArray.Get(1)^false));
-            Console.WriteLine("el resultado es: " + ( false| false&true |false));
-
-            Trivium trivium = new Trivium("1111111111","2222222222");
-            trivium.BuildTriviumKey();
-            BitArray key = trivium.GetKeyStream();
-            Console.WriteLine("el primer bit del keystream es: " + key[0]);
-            Encryptor encryptor = new Encryptor();
-            
+            textBoxPath.Enabled = false;            
         }
         
 
