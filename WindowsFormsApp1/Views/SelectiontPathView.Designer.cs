@@ -60,7 +60,7 @@
             this.buttonSelect.Name = "buttonSelect";
             this.buttonSelect.Size = new System.Drawing.Size(137, 23);
             this.buttonSelect.TabIndex = 1;
-            this.buttonSelect.Text = "Seleccionar";
+            this.buttonSelect.Text = "Ver Carpetas";
             this.buttonSelect.UseVisualStyleBackColor = true;
             this.buttonSelect.Click += new System.EventHandler(this.buttonSelect_Click);
             // 
@@ -106,7 +106,7 @@
             this.panel1.Controls.Add(this.label4);
             this.panel1.Location = new System.Drawing.Point(1, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(692, 46);
+            this.panel1.Size = new System.Drawing.Size(700, 46);
             this.panel1.TabIndex = 7;
             // 
             // label4
