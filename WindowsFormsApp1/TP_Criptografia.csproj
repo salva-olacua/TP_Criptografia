@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Objects\Encryptor.cs" />
     <Compile Include="Objects\Trivium.cs" />
     <Compile Include="Views\EncryptView.cs">
       <SubType>Form</SubType>

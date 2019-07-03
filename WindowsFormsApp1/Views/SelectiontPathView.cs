@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,9 +22,13 @@ namespace SelectiontPathView
 
             //sacar esta wea!!!
             UTF8Encoding encoding = new UTF8Encoding();
-            string a = "1111111111";
+            string a = "1234567893";
             byte[] bytes = encoding.GetBytes(a);
+            byte[] bytes2 = encoding.GetBytes("131311");
+
             BitArray bitArray = new BitArray(encoding.GetBytes(a));
+            BitArray bitArray2 = new BitArray(bytes2); 
+
             Console.WriteLine("la cantidad de bytes es: " + bytes.Length);
             Console.WriteLine("el primer byte es: " + encoding.GetString(bytes, 0, 1));
             Console.WriteLine("el segundo byte es: " + bytes[1]);
@@ -38,8 +43,10 @@ namespace SelectiontPathView
             trivium.BuildTriviumKey();
             BitArray key = trivium.GetKeyStream();
             Console.WriteLine("el primer bit del keystream es: " + key[0]);
-
+            Encryptor encryptor = new Encryptor();
+            
         }
+        
 
         //Helpful Methods
         private void GoToEncrypt()

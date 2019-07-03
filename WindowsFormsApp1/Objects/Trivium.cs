@@ -20,9 +20,6 @@ namespace WindowsFormsApp1.Objects
             UTF8Encoding encoding = new UTF8Encoding();
             key = new BitArray(encoding.GetBytes(_key));
             initialVecor = new BitArray(encoding.GetBytes(_initialVector));
-            Console.WriteLine("key length: " +key.Length);
-            Console.WriteLine("initial vector length: "+ initialVecor.Length);
-            Console.WriteLine("key count: "+ key.Count);
         }
 
         public void BuildTriviumKey()
