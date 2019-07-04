@@ -9,10 +9,8 @@ namespace WindowsFormsApp1.Objects
 {
     public class Encryptor
     {
-        // perfom xor to both member of the collections, if the length of bitArrayToOperate is smaller,
-        //it repeat the collection
-        private BitArray XORByElements(BitArray bitArrayGuide, BitArray bitArrayToOperate)
-        {
+        /*private BitArray XORByElements(BitArray bitArrayGuide, BitArray bitArrayToOperate)
+        {/*
             int j = 0,tamGuide=bitArrayGuide.Length;
             BitArray result = new BitArray(tamGuide);
             for (int i = 0; i < tamGuide; i++)
@@ -22,7 +20,9 @@ namespace WindowsFormsApp1.Objects
                 j++;
             }
             return result;
-        }
+            //bitArrayGuide.Xor(bitArrayToOperate);
+        }*/
+        private BitArray XORByElements(BitArray bitArrayGuide, BitArray bitArrayToOperate) => bitArrayGuide.Xor(bitArrayToOperate);
 
         public BitArray Encrypt(BitArray message, BitArray key) => this.XORByElements(message, key);
 

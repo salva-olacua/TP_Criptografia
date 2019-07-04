@@ -20,29 +20,23 @@ namespace EncryptView
         private Trivium trivium;
         private Encryptor encryptor = new Encryptor();
         
-        public EncryptView(string _path,SelectiontPathView.SelectiontPathView _spv,string _key,string _initialVector)
+        public EncryptView(string _path,SelectiontPathView.SelectiontPathView _spv,string _key)
         {
             InitializeComponent();
-            this.InitialContext(_path,_spv,_key,_initialVector);
+            this.InitialContext(_path,_spv,_key);
         }
 
         //Helpful Methods
-        private void InitialContext(string _path,SelectiontPathView.SelectiontPathView _spv, string _key, string _initialVector)
+        private void InitialContext(string _path,SelectiontPathView.SelectiontPathView _spv, string _key)
         {
             spv = _spv;
             this.DisabledAndSetTextBox(textBoxPathToSave,_path);
             this.DisabledAndSetTextBox(textBoxKey, _key);
-            this.DisabledAndSetTextBox(textBoxInitialVector, _initialVector);
-            this.InitializeAndBuildTrivium(_key,_initialVector);
             this.DisableTextbox(textBoxEncrypt);
             this.DisableTextbox(textBoxDecrypt);
         }
 
-        private void InitializeAndBuildTrivium(string key, string initialVector)
-        {
-            trivium = new Trivium(key, initialVector);
-            trivium.BuildTriviumKey();
-        }
+        private void InitializeAndBuildTrivium(string key)=> trivium = new Trivium(key);
 
         private void SetTextboxText(TextBox textBox, string text) => textBox.Text = text;
         

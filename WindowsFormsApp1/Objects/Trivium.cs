@@ -10,25 +10,20 @@ namespace WindowsFormsApp1.Objects
     public class Trivium
     {
         private BitArray key;
-        private BitArray initialVecor;
+        UTF8Encoding encoding = new UTF8Encoding();
         private BitArray internalState = new BitArray(288);
-        BitArray keyStream = new BitArray(64 * 8);
         private bool t1, t2, t3;
 
-        public Trivium(string _key,string _initialVector)
+        public Trivium(string _key)
         {
-            UTF8Encoding encoding = new UTF8Encoding();
             key = new BitArray(encoding.GetBytes(_key));
-            initialVecor = new BitArray(encoding.GetBytes(_initialVector));
         }
 
-        public void BuildTriviumKey()
+        public BitArray BuildTriviumKey(string initialVector,int fileSize)
         {
-            this.InitializeInternalState();
-            this.GenerateKeyStream();
+            this.InitializeInternalState(new BitArray(encoding.GetBytes(initialVector)));
+            return this.GenerateKeyStream(fileSize);
         }
-
-        public BitArray GetKeyStream() => keyStream;
 
         private void UpdateState()
         {
@@ -44,11 +39,11 @@ namespace WindowsFormsApp1.Objects
             internalState[177] = t2;
         }
 
-        private void InitializeInternalState()
+        private void InitializeInternalState(BitArray initialVector)
         {
             for (int i = 0; i < 80; i++) internalState[i] = key[79-i];
             for (int i = 80; i < 93; i++) internalState[i] = false;
-            for (int i = 0; i < 80; i++) internalState[93+i] = initialVecor[79-i];
+            for (int i = 0; i < 80; i++) internalState[93+i] = initialVector[79-i];
             for (int i = 173; i < 285; i++) internalState[i] = false;
             internalState[285] = internalState[286] = internalState[287] = true;
 
@@ -62,9 +57,10 @@ namespace WindowsFormsApp1.Objects
             }
         }
 
-        private void GenerateKeyStream()
+        private BitArray GenerateKeyStream(int fileSize)
         {
-            for (int i = 0; i < 64*8; i++)
+            BitArray keyStream = new BitArray(fileSize);
+            for (int i = 0; i < fileSize; i++)
             {
                 t1 = (internalState[65] | internalState[92]);
                 t2 = (internalState[161] | internalState[176]);
@@ -72,6 +68,7 @@ namespace WindowsFormsApp1.Objects
                 keyStream[i] = (t1 | t2 | t3);
                 this.UpdateState();
             }
+            return keyStream;
         }
 
 

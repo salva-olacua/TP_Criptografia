@@ -25,7 +25,7 @@ namespace SelectiontPathView
         //Helpful Methods
         private void GoToEncrypt()
         {
-            new EncryptView.EncryptView(textBoxPath.Text, this,textBoxKey.Text,textBoxInitialVector.Text).Show();
+            new EncryptView.EncryptView(textBoxPath.Text, this,textBoxKey.Text).Show();
             this.Hide();
         }
 
@@ -33,7 +33,6 @@ namespace SelectiontPathView
         {
             this.VerifyFieldPath();
             this.VerifyFieldKey();
-            this.VerifyFieldInitialVector();
         }
 
         private void VerifyFieldPath()
@@ -48,11 +47,6 @@ namespace SelectiontPathView
                 throw new Exception("No completo la clave o esta es mayor a 10");
         }
 
-        private void VerifyFieldInitialVector()
-        {
-            if (String.IsNullOrEmpty(textBoxInitialVector.Text) || textBoxInitialVector.Text.Length != 10)
-                throw new Exception("No completo el vector inicial o este es mayor a 10");
-        }
 
         //Events
         private void buttonSelect_Click(object sender, EventArgs e)
