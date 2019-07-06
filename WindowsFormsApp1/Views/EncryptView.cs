@@ -34,9 +34,10 @@ namespace EncryptView
             this.DisabledAndSetTextBox(textBoxKey, _key);
             this.DisableTextbox(textBoxEncrypt);
             this.DisableTextbox(textBoxDecrypt);
+            InitializeTrivium(_key);
         }
 
-        private void InitializeAndBuildTrivium(string key)=> trivium = new Trivium(key);
+        private void InitializeTrivium(string key)=> trivium = new Trivium(key);
 
         private void SetTextboxText(TextBox textBox, string text) => textBox.Text = text;
         
@@ -58,7 +59,7 @@ namespace EncryptView
         private void EncryptToFile()
         {
             BitArray messageToEncrypt = new BitArray(File.ReadAllBytes(@openFileDialogFiles.FileName));
-            BitArray encrypted = encryptor.Encrypt(messageToEncrypt, trivium.GetKeyStream());
+            BitArray encrypted = encryptor.Encrypt(messageToEncrypt, trivium.BuildTriviumKeyStream(textBoxInitialVector.Text,messageToEncrypt.Length));
 
             using (FileStream fileStream = new FileStream((@textBoxPathToSave.Text + @"\ArchivoEncriptado"), FileMode.Create, FileAccess.Write))
             {
@@ -74,19 +75,20 @@ namespace EncryptView
             byte[] data2;
             using (FileStream fs = new FileStream(@openFileDialogFiles.FileName, FileMode.Open, FileAccess.Read))
             {
-                data2 = new byte[fs.Length];
-                fs.Read(data2,0, data2.Length);
-                data = new byte[data2.Length-54];
-                for (int i = 0; i < data.Length; i++) data[0+i] = data2[54+i];
+                int fileSize = (int)fs.Length;
+                data2 = new byte[fileSize];
+                fs.Read(data2,0, fileSize);
+                data = new byte[fileSize-54];
+                for (int i = 0; i < data.Length; i++) data.SetValue(data2.GetValue(54+i),i);
             }
             
             BitArray messageToEncrypt = new BitArray(data);
-            BitArray encrypted = encryptor.Encrypt(messageToEncrypt, trivium.GetKeyStream());
+            BitArray encrypted = encryptor.Encrypt(messageToEncrypt, trivium.BuildTriviumKeyStream(textBoxInitialVector.Text,messageToEncrypt.Length));
 
             using (FileStream fileStream = new FileStream((@textBoxPathToSave.Text + @"\ArchivoEncriptado.BMP"), FileMode.Create, FileAccess.Write))
             {
                 byte[] encryptedBytes = this.BitToByte(encrypted);
-                for (int i = 0; i < encryptedBytes.Length; i++) data2[54+i] = encryptedBytes[i];
+                for (int i = 0; i < encryptedBytes.Length; i++) data2.SetValue(encryptedBytes.GetValue(i), (54 + i));
                 fileStream.Write(data2,0,data2.Length);                
             }
 
@@ -95,7 +97,7 @@ namespace EncryptView
         private void DecryptToFile()
         {
             BitArray messageToDecrypt = new BitArray(File.ReadAllBytes(@textBoxDecrypt.Text));
-            BitArray decrypted = encryptor.Decrypt(messageToDecrypt, trivium.GetKeyStream());
+            BitArray decrypted = encryptor.Decrypt(messageToDecrypt, trivium.BuildTriviumKeyStream(textBoxInitialVector.Text,messageToDecrypt.Length));
             
             using (FileStream filestream = new FileStream(@textBoxPathToSave.Text + @"\ArchivoDesencriptado", FileMode.Create))
             {
@@ -108,16 +110,18 @@ namespace EncryptView
         {
             byte[] data;
             byte[] data2;
+            int fileSize;
             using (FileStream fs = new FileStream(@textBoxDecrypt.Text, FileMode.Open, FileAccess.Read))
             {
-                data2 = new byte[fs.Length];
-                fs.Read(data2, 0, data2.Length);
-                data = new byte[data2.Length - 54];
-                for (int i = 0; i < data.Length; i++) data[0+i] = data2[54+i];
+                fileSize = (int)fs.Length;
+                data2 = new byte[fileSize];
+                fs.Read(data2, 0, fileSize);
+                data = new byte[fileSize - 54];
+                for (int i = 0; i < data.Length; i++) data[i] = data2[54+i];
             }
 
-            BitArray messageToEncrypt = new BitArray(data);
-            BitArray decrypted = encryptor.Decrypt(messageToEncrypt, trivium.GetKeyStream());
+            BitArray messageToDecrypt = new BitArray(data);
+            BitArray decrypted = encryptor.Decrypt(messageToDecrypt, trivium.BuildTriviumKeyStream(textBoxInitialVector.Text,messageToDecrypt.Length));
 
             using (FileStream fileStream = new FileStream((@textBoxPathToSave.Text + @"\ArchivoDesencriptado.BMP"), FileMode.Create, FileAccess.Write))
             {
@@ -131,6 +135,18 @@ namespace EncryptView
         {
             if (String.IsNullOrEmpty(textBoxEncrypt.Text))
                 throw new Exception("Debe seleccionar un archivo primero.");
+        }
+
+        private void VerifyInitialVector()
+        {
+            if (String.IsNullOrEmpty(textBoxInitialVector.Text)|| textBoxInitialVector.Text.Length!=10)
+                throw new Exception("Debe agregar un vector de inicializacion de 10 digitos.");
+        }
+
+        private void CleanInitialVector()
+        {
+            this.SetTextboxText(textBoxInitialVector,"");
+            textBoxInitialVector.Enabled = true;
         }
 
         private void EncrypAccordingToTheFile()
@@ -163,12 +179,18 @@ namespace EncryptView
             {
                 try
                 {
+                    this.VerifyInitialVector();
                     this.DisabledAndSetTextBox(textBoxFile,@openFileDialogFiles.FileName);
                     this.SetTextboxText(textBoxEncrypt,@openFileDialogFiles.FileName);
+                    this.DisableTextbox(textBoxInitialVector);
                 }
                 catch (SecurityException ex)
                 {
                     MessageBox.Show($"Security error.\n\nError message: {ex.Message}\n\n" + $"Details:\n\n{ex.StackTrace}");
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Advertencia de clave", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
         }
@@ -185,6 +207,7 @@ namespace EncryptView
         {
             try
             {
+                this.VerifyInitialVector();
                 this.VerifyPathOfFileToEncrypt();
                 this.EncrypAccordingToTheFile();
                 MessageBox.Show("Encriptado Exitoso.","Encriptado",MessageBoxButtons.OK,MessageBoxIcon.Information);
@@ -199,14 +222,16 @@ namespace EncryptView
         {
             try
             {
+                this.VerifyInitialVector();
                 this.DecrypAccordingToTheFile();
                 MessageBox.Show("Desencriptado Exitoso.", "Encriptado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.CleanInitialVector();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
         }
-        
+
     }
 }
